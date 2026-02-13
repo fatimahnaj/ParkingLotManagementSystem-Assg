@@ -5,7 +5,6 @@ import java.util.List;
 
 /**
  * Handles report retrieval.
- * Does NOT calculate any billing logic.
  */
 public class AdminService {
 
