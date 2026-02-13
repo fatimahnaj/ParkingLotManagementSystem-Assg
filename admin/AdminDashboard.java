@@ -3,110 +3,122 @@ package admin;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.List;
 
-/**
- * Admin UI Panel
- * Displays:
- * - Current parked vehicles
- * - Occupancy reports
- * - Revenue
- * - Unpaid fines
- */
 public class AdminDashboard extends JPanel {
 
-    private AdminService service;
+    private final AdminRepo repo;
 
-    private DefaultTableModel parkedModel =
-            new DefaultTableModel(new Object[]{"Plate", "Vehicle", "Spot", "Type", "Entry"}, 0);
+    private final DefaultTableModel parkedModel =
+            new DefaultTableModel(new Object[]{"Plate", "Vehicle", "Spot", "Spot Type", "Entry"}, 0);
 
-    private DefaultTableModel floorModel =
+    private final DefaultTableModel floorModel =
             new DefaultTableModel(new Object[]{"Floor", "Total", "Occupied", "Rate %"}, 0);
 
-    private DefaultTableModel typeModel =
+    private final DefaultTableModel typeModel =
             new DefaultTableModel(new Object[]{"Type", "Total", "Occupied"}, 0);
 
-    private DefaultTableModel fineModel =
-            new DefaultTableModel(new Object[]{"Plate", "Fine", "Amount (RM)"}, 0);
+    private final DefaultTableModel fineModel =
+            new DefaultTableModel(new Object[]{"Plate", "Fine Type", "Amount (RM)"}, 0);
 
-    private JLabel revenueLabel = new JLabel();
+    private final JLabel revenueLabel = new JLabel();
+    private final JComboBox<String> policyBox = new JComboBox<>(new String[]{"A", "B", "C"});
 
-    public AdminDashboard(AdminProvider provider) {
-
-        this.service = new AdminService(provider);
+    public AdminDashboard(AdminRepo repo) {
+        this.repo = repo;
 
         setLayout(new BorderLayout(10, 10));
 
         JTabbedPane tabs = new JTabbedPane();
-
         tabs.addTab("Parked", new JScrollPane(new JTable(parkedModel)));
-        tabs.addTab("Occupancy", buildOccupancyPanel());
-        tabs.addTab("Revenue", buildRevenuePanel());
+        tabs.addTab("Occupancy", buildOccupancy());
+        tabs.addTab("Revenue", buildRevenue());
         tabs.addTab("Fines", new JScrollPane(new JTable(fineModel)));
+        tabs.addTab("Fine Policy", buildPolicyPanel());
 
         JButton refreshBtn = new JButton("Refresh");
-        refreshBtn.addActionListener(e -> refresh());
+        refreshBtn.addActionListener(e -> refreshAll());
 
         add(tabs, BorderLayout.CENTER);
         add(refreshBtn, BorderLayout.SOUTH);
 
-        refresh();
+        refreshAll();
     }
 
-    private JPanel buildOccupancyPanel() {
-        JPanel p = new JPanel(new GridLayout(2, 1));
+    private JPanel buildOccupancy() {
+        JPanel p = new JPanel(new GridLayout(2, 1, 10, 10));
         p.add(new JScrollPane(new JTable(floorModel)));
         p.add(new JScrollPane(new JTable(typeModel)));
         return p;
     }
 
-    private JPanel buildRevenuePanel() {
-        JPanel p = new JPanel(new BorderLayout());
-        revenueLabel.setFont(new Font("Arial", Font.BOLD, 16));
+    private JPanel buildRevenue() {
+        JPanel p = new JPanel(new BorderLayout(10, 10));
+        revenueLabel.setFont(revenueLabel.getFont().deriveFont(Font.BOLD, 16f));
         p.add(revenueLabel, BorderLayout.NORTH);
+        p.add(new JLabel("<html>Revenue is based on paid sessions stored in database.<br/>" +
+                "Billing module will update fee_amount/fine_amount and is_paid.</html>"), BorderLayout.CENTER);
         return p;
     }
 
-    private void refresh() {
+    private JPanel buildPolicyPanel() {
+        JPanel p = new JPanel(new GridLayout(3, 1, 8, 8));
+        p.add(new JLabel("Select fine policy option (A/B/C):"));
 
-        // Parked Vehicles
+        policyBox.setSelectedItem(repo.getFinePolicyOption());
+        p.add(policyBox);
+
+        JButton saveBtn = new JButton("Save Policy (for future billing)");
+        saveBtn.addActionListener(e -> {
+            repo.setFinePolicyOption((String) policyBox.getSelectedItem());
+            JOptionPane.showMessageDialog(this, "Saved fine policy: " + repo.getFinePolicyOption());
+        });
+        p.add(saveBtn);
+
+        return p;
+    }
+
+    public void refreshAll() {
+        // parked
         parkedModel.setRowCount(0);
-        for (AdminProvider.ParkedRow r : service.getParkedVehicles()) {
-            parkedModel.addRow(new Object[]{
-                    r.plate, r.vehicleType, r.spotId, r.spotType, r.entryTime
-            });
+        for (AdminRepo.ParkedRow r : repo.getCurrentlyParked()) {
+            parkedModel.addRow(new Object[]{r.plate, r.vehicleType, r.spotId, r.spotType, r.entryTime});
         }
 
-        // Floor Occupancy
+        // occupancy floor
         floorModel.setRowCount(0);
-        for (AdminProvider.FloorRow r : service.getFloorOccupancy()) {
-            floorModel.addRow(new Object[]{
-                    r.floorId, r.total, r.occupied,
-                    String.format("%.2f", r.getRate())
-            });
+        for (AdminRepo.FloorOccRow r : repo.getOccupancyByFloor()) {
+            floorModel.addRow(new Object[]{r.floorId, r.total, r.occupied, String.format("%.2f", r.rate())});
         }
 
-        // Type Occupancy
+        // occupancy type
         typeModel.setRowCount(0);
-        for (AdminProvider.TypeRow r : service.getTypeOccupancy()) {
-            typeModel.addRow(new Object[]{
-                    r.type, r.total, r.occupied
-            });
+        for (AdminRepo.TypeOccRow r : repo.getOccupancyByType()) {
+            typeModel.addRow(new Object[]{r.spotType, r.total, r.occupied});
         }
 
-        // Fines
+        // fines
         fineModel.setRowCount(0);
-        for (AdminProvider.FineRow r : service.getUnpaidFines()) {
-            fineModel.addRow(new Object[]{
-                    r.plate, r.fineType, String.format("%.2f", r.amount)
-            });
+        for (AdminRepo.FineRow r : repo.getUnpaidFines()) {
+            fineModel.addRow(new Object[]{r.plate, r.fineType, String.format("%.2f", r.amount)});
         }
 
-        // Revenue
-        AdminProvider.Revenue rev = service.getRevenue();
-        revenueLabel.setText(String.format(
-                "Fees: RM %.2f | Fines: RM %.2f | Total: RM %.2f",
-                rev.totalFees, rev.totalFines, rev.getTotal()
-        ));
+        // revenue
+        AdminRepo.Revenue rev = repo.getRevenue();
+        revenueLabel.setText(String.format("Fees: RM %.2f | Fines: RM %.2f | Total: RM %.2f",
+                rev.totalFees, rev.totalFines, rev.total()));
+    }
+
+    // quick test run
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            AdminDB db = new AdminDB("parking.db");
+
+            JFrame f = new JFrame("Admin Dashboard");
+            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            f.setSize(900, 600);
+            f.setLocationRelativeTo(null);
+            f.setContentPane(new AdminDashboard(new AdminRepo(db)));
+            f.setVisible(true);
+        });
     }
 }
