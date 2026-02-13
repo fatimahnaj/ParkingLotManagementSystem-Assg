@@ -29,4 +29,8 @@ public class Vehicle {
         return Duration.between(entryTime, exitTime).toMinutes();
     }
 
+    public String toString() {
+    return "PlateNum = " + plateNum + " | Type = " + type ;
+}
+
 }
