@@ -15,6 +15,10 @@ public class ParkingSpot {
         this.currentVehicle = null;
     }
 
+    // public boolean canFitVehicle(Vehicle vehicle){
+    //     return vehicle.canParkIn(type);
+    // }
+
     public boolean assignVehicle(Vehicle vehicle){
         if(!occupied){
             this.currentVehicle = vehicle;
