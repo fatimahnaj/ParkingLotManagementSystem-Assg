@@ -27,6 +27,15 @@ class Dashboard extends JPanel {
         //registerBtn.addActionListener(e -> frame.showScreen("SCREEN2")); //switch screen
 
 
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        JButton adminBtn = new JButton("admin");
+        adminBtn.addActionListener(e -> frame.showScreen("SCREEN3"));
+        bottomPanel.add(adminBtn, BorderLayout.EAST);
+
+        JButton customerBtn = new JButton("Customer");
+        customerBtn.addActionListener(e-> frame.showScreen("CUSTOMERSCREEN"));
+        bottomPanel.add(customerBtn, BorderLayout.WEST);
+
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.add(registerBtn, new GridBagConstraints());
         add(centerPanel, BorderLayout.CENTER);
