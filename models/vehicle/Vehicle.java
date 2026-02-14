@@ -1,6 +1,7 @@
 package models.vehicle;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Vehicle {
     //protected so that child can use it as well
@@ -23,14 +24,39 @@ public class Vehicle {
     public void setExitTime(LocalDateTime exitTime) {
         this.exitTime = exitTime;
     }
-
+    //getters
     public long getDurationHours() {
         if (exitTime == null) return 0;
         return Duration.between(entryTime, exitTime).toMinutes();
     }
 
+    public String getPlateNum(){
+        return plateNum;
+    }
+
+    public LocalDateTime getEntryTime(){
+        return entryTime;
+    }
+
+    public LocalDateTime getExitTime(){
+        return exitTime;
+    }
+
+    //get entry/exit time with better format
+    public String getFormattedEntryTime(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedEntryTime = entryTime.format(formatter);
+        return formattedEntryTime;
+    }
+
+    public String getFormattedExitTime(){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String formattedExitTime = exitTime.format(formatter);
+        return formattedExitTime;
+    }
+
     public String toString() {
-    return "PlateNum = " + plateNum + " | Type = " + type ;
+        return "PlateNum = " + plateNum + " | Type = " + type + " | Entry time = " + getFormattedEntryTime();
 }
 
 }

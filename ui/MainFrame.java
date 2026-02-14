@@ -2,6 +2,7 @@ package ui;
 import java.awt.*;
 import javax.swing.*;
 
+import models.parking.ParkingLot;
 public class MainFrame extends JFrame {
 
     private CardLayout cardLayout;
