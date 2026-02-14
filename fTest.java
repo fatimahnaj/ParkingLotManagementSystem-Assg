@@ -1,3 +1,4 @@
+import java.time.LocalDateTime;
 import java.util.Scanner;
 import models.vehicle.*;
 
@@ -57,13 +58,15 @@ public class fTest {
                             v1 = new Handicapped(plateNumValue, "Handicapped");
                             break;
                         default:
-                            System.err.println("SABAJAP LOM SETUP");
+                            System.err.println("Kau pilih apa nyah.");
                             v1 = null;
                             break;
                     }
 
                     //print data of the vehicle if entry is succeed
                     if (v1 != null) {
+                        //Entry time is counted only once customer selected parking spot
+                        v1.setEntryTime(LocalDateTime.now());
                         System.out.println(v1);
                     }
 
