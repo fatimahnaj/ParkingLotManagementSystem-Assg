@@ -1,8 +1,11 @@
 import java.util.Scanner;
-import vehicle.*;
+import models.vehicle.*;
 
 public class fTest {
     public static void main(String[] args) {
+
+        //scanner - to get input
+        Scanner sc = new Scanner(System.in);
         
         while (true) {
         System.out.println("\n==== Parking Lot Management System ====");
@@ -11,9 +14,6 @@ public class fTest {
         System.out.println("1) Park Vehicle (Entry)");
         System.out.println("2) Exit Vehicle");
         System.out.println("0) Logout / Quit");
-
-            //scanner - to get input
-            Scanner sc = new Scanner(System.in);
 
             System.out.print("Choose: ");
             String choice = sc.nextLine().trim();
@@ -85,5 +85,6 @@ public class fTest {
                 System.out.println("ERROR: " + e.getMessage());
             }
         }
+        sc.close();
     }
 }
