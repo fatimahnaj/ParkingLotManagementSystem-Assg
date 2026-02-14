@@ -18,20 +18,18 @@ class Dashboard extends JPanel {
         this.frame = frame;
 
         setLayout(new BorderLayout());
-        
 
         JButton registerBtn = new JButton("Register");
         Dimension registerBtnSize = new Dimension(150, 40);
         registerBtn.setPreferredSize(registerBtnSize);
         registerBtn.addActionListener(e-> registerPopup());
-        //registerBtn.addActionListener(e -> frame.showScreen("SCREEN2")); //switch screen
-
 
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.add(registerBtn, new GridBagConstraints());
         add(centerPanel, BorderLayout.CENTER);
     }
 
+    //popup utk registration vehicle
     private void registerPopup() {
         JPanel panel = new JPanel(new GridLayout(2,2,1,1));
         JTextField plateField = new JTextField(15);

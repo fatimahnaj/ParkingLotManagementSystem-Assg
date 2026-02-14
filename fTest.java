@@ -67,6 +67,7 @@ public class fTest {
                     if (v1 != null) {
                         //Entry time is counted only once customer selected parking spot
                         v1.setEntryTime(LocalDateTime.now());
+                        //Ticket newTicket = new Ticket(v1, null)
                         System.out.println(v1);
                     }
 
