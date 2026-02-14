@@ -1,8 +1,13 @@
 package ui;
 import java.awt.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-
 import javax.swing.*;
+import models.vehicle.Car;
+import models.vehicle.Handicapped;
+import models.vehicle.Motorcycle;
+import models.vehicle.SUV;
+import models.vehicle.Vehicle;
 
 class Dashboard extends JPanel {
 
@@ -67,6 +72,33 @@ class Dashboard extends JPanel {
                 JOptionPane.showMessageDialog(panel, "Error: Please fill in plate number.");
             } else { 
                 //successful :
+                //create a new vehicle
+                Vehicle v;
+                switch(selectedChoice) {
+                        case "Motorcycle":
+                            v = new Motorcycle(plate, "Motorcycle");
+                            break;
+                        case "Car":
+                            v = new Car(plate, "Car");
+                            break;
+                        case "SUV":
+                            v = new SUV(plate, "SUV");
+                            break;
+                        case "Handicapped":
+                            v = new Handicapped(plate, "Handicapped");
+                            break;
+                        default:
+                            System.err.println("Kau pilih apa nyah.");
+                            v = null;
+                            break;
+                    }
+                //print data of the vehicle if entry is succeed
+                if (v != null) {
+                    //Entry time is counted only once customer selected parking spot
+                    v.setEntryTime(LocalDateTime.now());
+                    frame.addVehicle(v);
+                    System.out.println(v);
+                }
                 JOptionPane.showMessageDialog(panel, "Registration successful.");
                 frame.showScreen("SCREEN2");
             }

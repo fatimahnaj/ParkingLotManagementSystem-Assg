@@ -1,11 +1,15 @@
 package ui;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
+import models.vehicle.Vehicle;
 
 public class MainFrame extends JFrame {
 
     private CardLayout cardLayout;
     private JPanel container;
+    private final List<Vehicle> vehicles = new ArrayList<>();
 
     public MainFrame() {
 
@@ -31,6 +35,22 @@ public class MainFrame extends JFrame {
         add(container);
 
         setVisible(true);
+    }
+
+    //unload data from database (if ada)
+    //objects manually created by developer
+    private void initData(){
+        
+    }
+
+    //get the vehicle objects
+    public List<Vehicle> getVehicles(){
+        return vehicles;
+    }
+
+    //add a new vehicle obj into the list
+    public void addVehicle(Vehicle v){
+        vehicles.add(v);
     }
 
     // Navigation method
