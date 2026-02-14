@@ -10,7 +10,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
 
         setTitle("Multi Screen App");
-        setSize(500, 300);
+        setSize(1000, 600);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 

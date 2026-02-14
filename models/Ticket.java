@@ -4,10 +4,10 @@ import models.parking.ParkingSpot;
 import models.vehicle.Vehicle;
 
 public class Ticket {
-    private String ticketID;
+    private String ticketID; //ni guna bile eh
     private Vehicle vehicle;
     private ParkingSpot parkingSpot;
-    private boolean isPaid;
+    private boolean isPaid; 
 
     //ticket will be generated once vehicle have selected parking spot
     public Ticket(Vehicle vehicle, ParkingSpot parkingSpot){
