@@ -1,11 +1,13 @@
 package models.parking;
 import models.vehicle.Vehicle;
+import models.parking.ParkingLot;
 
 
 public class ParkingSpot {
     private String spotID;
     private SpotType type;
     private boolean occupied;
+    private String plateNum;
     private Vehicle currentVehicle; //refer to fatim's part for vehicle
 
     public ParkingSpot(String spotID, SpotType type){
@@ -22,6 +24,7 @@ public class ParkingSpot {
     public boolean assignVehicle(Vehicle vehicle){
         if(!occupied){
             this.currentVehicle = vehicle;
+            this.plateNum = vehicle.getPlateNum();
             this.occupied = true;
             return true;
         } return false;
@@ -43,5 +46,18 @@ public class ParkingSpot {
     public String getSpotID() {
         return spotID;
     }
+
+    public Vehicle getCurrentVehicle(){
+        return currentVehicle;
+    }
     
+    public String getPlateNum() {
+        return plateNum;
+    }
+
+    @Override
+    public String toString() {
+        return spotID + " [" + type + "] - " +
+                (occupied ? "Occupied by " + getPlateNum() : "Free");
+    }
 }

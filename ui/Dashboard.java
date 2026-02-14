@@ -23,6 +23,10 @@ class Dashboard extends JPanel {
         adminBtn.addActionListener(e -> frame.showScreen("SCREEN3"));
         bottomPanel.add(adminBtn, BorderLayout.EAST);
 
+        JButton customerBtn = new JButton("Customer");
+        customerBtn.addActionListener(e-> frame.showScreen("CUSTOMERSCREEN"));
+        bottomPanel.add(customerBtn, BorderLayout.WEST);
+
         add(centerPanel, BorderLayout.CENTER);
         add(bottomPanel, BorderLayout.SOUTH);
     }
