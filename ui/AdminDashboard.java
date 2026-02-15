@@ -1,9 +1,11 @@
-package admin;
+package ui;
 
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import ui.MainFrame;
+import admin.AdminRepo;
+import admin.AdminDB;
+
 
 public class AdminDashboard extends JPanel {
 
@@ -113,16 +115,10 @@ public class AdminDashboard extends JPanel {
 
     // quick test run
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            AdminDB db = new AdminDB("parking.db");
-
-            JFrame f = new JFrame("Admin Dashboard");
-            f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            f.setSize(900, 600);
-            f.setLocationRelativeTo(null);
-            MainFrame frame = new MainFrame(); 
-            f.setContentPane(new AdminDashboard(frame, new AdminRepo(db)));
-            f.setVisible(true);
-        });
+    SwingUtilities.invokeLater(() -> {
+        MainFrame frame = new MainFrame();
+        frame.setVisible(true);
+    });
     }
+
 }

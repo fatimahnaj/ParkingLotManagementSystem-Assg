@@ -52,3 +52,14 @@ CREATE TABLE IF NOT EXISTS admin_settings (
 
 INSERT OR IGNORE INTO admin_settings(key, value)
 VALUES ('fine_policy', 'A');
+
+-- Admin users (login)
+CREATE TABLE IF NOT EXISTS admins (
+    admin_id TEXT PRIMARY KEY,
+    password TEXT NOT NULL,
+    name     TEXT
+);
+
+INSERT OR IGNORE INTO admins(admin_id, password, name) VALUES ('admin1', '1234', 'Ali');
+INSERT OR IGNORE INTO admins(admin_id, password, name) VALUES ('admin2', 'abcd', 'Aisyah');
+

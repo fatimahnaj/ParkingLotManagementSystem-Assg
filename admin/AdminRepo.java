@@ -238,4 +238,24 @@ public class AdminRepo {
             System.out.println("[AdminRepo] setFinePolicyOption error: " + e.getMessage());
         }
     }
+
+    // Check admin login in database
+    public boolean checkAdminLogin(String id, String password) {
+
+        String sql = "SELECT 1 FROM admins WHERE admin_id=? AND password=?";
+
+        try (Connection c = db.getConnection();
+            PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setString(1, id);
+            ps.setString(2, password);
+
+            ResultSet rs = ps.executeQuery();
+            return rs.next(); // true if found
+
+        } catch (Exception e) {
+            System.out.println("Login error: " + e.getMessage());
+            return false;
+        }
+    }
 }
