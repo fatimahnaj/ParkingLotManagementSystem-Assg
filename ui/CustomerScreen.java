@@ -25,6 +25,7 @@ public class CustomerScreen extends JPanel {
         setLayout(new GridLayout(5,2));
 
         //Plate number input
+        plateField = new JTextField();
         add(new JLabel("Plate Number: "));
         add(plateField);
 
@@ -52,7 +53,7 @@ public class CustomerScreen extends JPanel {
             }
         });
 
-        backButton.addActionListener(new ActionListener() {
+        exitButton.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
                 handleExit();
             }
