@@ -91,6 +91,10 @@ public class MainFrame extends JFrame {
         cardLayout.show(container, name);
     }
 
+    public void addVehicle(Vehicle vehicle) {
+        System.out.println("Vehicle added: " + vehicle);
+    }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainFrame::new);
     }
