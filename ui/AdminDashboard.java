@@ -4,13 +4,12 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import admin.AdminRepo;
-import admin.AdminDB;
-
 
 public class AdminDashboard extends JPanel {
 
     private final MainFrame frame;
     private final AdminRepo repo;
+    private JTabbedPane tabs;
 
     private final DefaultTableModel parkedModel =
             new DefaultTableModel(new Object[]{"Plate", "Vehicle", "Spot", "Spot Type", "Entry"}, 0);
@@ -27,13 +26,13 @@ public class AdminDashboard extends JPanel {
     private final JLabel revenueLabel = new JLabel();
     private final JComboBox<String> policyBox = new JComboBox<>(new String[]{"A", "B", "C"});
 
-    public AdminDashboard(MainFrame frame,AdminRepo repo) {
+    public AdminDashboard(MainFrame frame, AdminRepo repo) {
         this.frame = frame;
         this.repo = repo;
 
         setLayout(new BorderLayout(10, 10));
 
-        JTabbedPane tabs = new JTabbedPane();
+        tabs = new JTabbedPane();
         tabs.addTab("Parked", new JScrollPane(new JTable(parkedModel)));
         tabs.addTab("Occupancy", buildOccupancy());
         tabs.addTab("Revenue", buildRevenue());
@@ -43,8 +42,28 @@ public class AdminDashboard extends JPanel {
         JButton refreshBtn = new JButton("Refresh");
         refreshBtn.addActionListener(e -> refreshAll());
 
+        JButton logoutBtn = new JButton("Logout");
+        logoutBtn.addActionListener(e -> {
+            // go back to main dashboard screen
+            if (frame != null) {
+                resetToParkedTab(); // reset tab
+                frame.resetAdminLogin(); // clear login form for next time
+                frame.showScreen("SCREEN1");
+            }
+        });
+
+        // same size buttons looks nicer
+        Dimension btnSize = new Dimension(140, 35);
+        refreshBtn.setPreferredSize(btnSize);
+        logoutBtn.setPreferredSize(btnSize);
+
+        // put logout under refresh (stacked)
+        JPanel bottomPanel = new JPanel(new GridLayout(2, 1, 0, 6));
+        bottomPanel.add(refreshBtn);
+        bottomPanel.add(logoutBtn);
+
         add(tabs, BorderLayout.CENTER);
-        add(refreshBtn, BorderLayout.SOUTH);
+        add(bottomPanel, BorderLayout.SOUTH);
 
         refreshAll();
     }
@@ -66,18 +85,32 @@ public class AdminDashboard extends JPanel {
     }
 
     private JPanel buildPolicyPanel() {
-        JPanel p = new JPanel(new GridLayout(3, 1, 8, 8));
-        p.add(new JLabel("Select fine policy option (A/B/C):"));
+        
+        JPanel p = new JPanel();
+        p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+
+        // label + combobox in one small row
+        JPanel selectPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        selectPanel.add(new JLabel("Select fine policy option (A/B/C):"));
 
         policyBox.setSelectedItem(repo.getFinePolicyOption());
-        p.add(policyBox);
+        selectPanel.add(policyBox);
 
+        // save button in center row
         JButton saveBtn = new JButton("Save Policy (for future billing)");
         saveBtn.addActionListener(e -> {
             repo.setFinePolicyOption((String) policyBox.getSelectedItem());
             JOptionPane.showMessageDialog(this, "Saved fine policy: " + repo.getFinePolicyOption());
         });
-        p.add(saveBtn);
+
+        JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        savePanel.add(saveBtn);
+
+        p.add(Box.createVerticalStrut(20));
+        p.add(selectPanel);
+        p.add(Box.createVerticalStrut(10));
+        p.add(savePanel);
+        p.add(Box.createVerticalGlue());
 
         return p;
     }
@@ -111,14 +144,20 @@ public class AdminDashboard extends JPanel {
         AdminRepo.Revenue rev = repo.getRevenue();
         revenueLabel.setText(String.format("Fees: RM %.2f | Fines: RM %.2f | Total: RM %.2f",
                 rev.totalFees, rev.totalFines, rev.total()));
+
+        // update dropdown too (so other admin changes can be seen after refresh)
+        policyBox.setSelectedItem(repo.getFinePolicyOption());
+    }
+
+    public void resetToParkedTab() {
+        if (tabs != null) tabs.setSelectedIndex(0); // Reset to first tab
     }
 
     // quick test run
     public static void main(String[] args) {
-    SwingUtilities.invokeLater(() -> {
-        MainFrame frame = new MainFrame();
-        frame.setVisible(true);
-    });
+        SwingUtilities.invokeLater(() -> {
+            MainFrame frame = new MainFrame();
+            frame.setVisible(true);
+        });
     }
-
 }

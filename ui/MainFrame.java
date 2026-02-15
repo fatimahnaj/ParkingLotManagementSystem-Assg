@@ -1,6 +1,5 @@
 package ui;
 import admin.AdminDB;
-import ui.AdminDashboard;
 import admin.AdminRepo;
 import java.awt.*;
 import java.util.ArrayList;
@@ -20,6 +19,7 @@ public class MainFrame extends JFrame {
     private JPanel container;
     private final List<Vehicle> vehicles = new ArrayList<>();
     private CustomerDashboard customerDashboard;
+    private AdminLogin adminLogin;
 
     public MainFrame() {
 
@@ -41,7 +41,7 @@ public class MainFrame extends JFrame {
         Screen3 screen3 = new Screen3(this);
         CustomerScreen customerscreen = new CustomerScreen(this, new ParkingLot("MyLot"));
         AdminDashboard adminDashboard = new AdminDashboard(this, new AdminRepo(db));
-        AdminLogin adminLogin = new AdminLogin(this, new AdminRepo(db));
+        adminLogin = new AdminLogin(this, new AdminRepo(db));
 
         // Add screens
         container.add(screen1, "SCREEN1");
@@ -51,7 +51,6 @@ public class MainFrame extends JFrame {
         container.add(adminDashboard, "ADMINDASHBOARD");
         container.add(adminLogin, "ADMINLOGIN");
         
-
         add(container);
 
         setVisible(true);
@@ -89,6 +88,12 @@ public class MainFrame extends JFrame {
     // Navigation method
     public void showScreen(String name) {
         cardLayout.show(container, name);
+    }
+
+    public void resetAdminLogin() {
+        if (adminLogin != null) {
+            adminLogin.resetForm();
+        }
     }
 
     public static void main(String[] args) {

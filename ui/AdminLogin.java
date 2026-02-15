@@ -82,4 +82,10 @@ public class AdminLogin extends JPanel {
             JOptionPane.showMessageDialog(this, "Invalid ID or password.");
         }
     }
+
+    public void resetForm() {
+        idField.setText("");
+        passField.setText("");
+        idField.requestFocusInWindow();
+    }
 }
