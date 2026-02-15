@@ -1,6 +1,6 @@
 package models.parking;
 import models.vehicle.Vehicle;
-import models.parking.ParkingLot;
+// import models.parking.ParkingLot;
 
 
 public class ParkingSpot {
