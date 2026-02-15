@@ -61,7 +61,7 @@ class Dashboard extends JPanel {
 
         //handling the result from the popup
         int result = JOptionPane.showConfirmDialog(
-                this,panel,"Create new Seminar",
+                this,panel,"Vehicle registration",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE);
 
