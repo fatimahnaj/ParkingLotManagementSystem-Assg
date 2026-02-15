@@ -32,7 +32,9 @@ public class MainFrame extends JFrame {
         cardLayout = new CardLayout();
         container = new JPanel(cardLayout);
 
+        //initialise data for current run
         initData();
+        //retrieve database for admin
         AdminDB db = new AdminDB("parking.db");
 
         // Create screens

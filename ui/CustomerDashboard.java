@@ -9,6 +9,7 @@ class CustomerDashboard extends JPanel {
     private JPanel labelsPanel;
     private JLabel plateLabel;
     private JLabel vehicleTypeLabel;
+    private Vehicle currentVehicle;
 
     public CustomerDashboard(MainFrame frame) {
 
@@ -22,6 +23,9 @@ class CustomerDashboard extends JPanel {
         parkBtn.setPreferredSize(new Dimension(150, 40));
         JButton exitBtn = new JButton("Exit");
         exitBtn.setPreferredSize(new Dimension(150, 40));
+        //Action listeners
+        parkBtn.addActionListener(e -> handlePark());
+        exitBtn.addActionListener(e -> handleExit());
 
         labelsPanel = new JPanel(new GridLayout(2, 1, 0, 8));
         labelsPanel.add(plateLabel);
@@ -44,7 +48,7 @@ class CustomerDashboard extends JPanel {
     }
 
     public void refresh(){
-        Vehicle currentVehicle = frame.getLatestVehicle();
+        currentVehicle = frame.getLatestVehicle();
         String plateText = currentVehicle == null ? "(none)" : currentVehicle.getPlateNum();
         String vehicleTypeText = currentVehicle == null ? "(none)" : currentVehicle.getType();
         plateLabel.setText("Plate number : " + plateText);
@@ -52,5 +56,21 @@ class CustomerDashboard extends JPanel {
         revalidate();
         repaint();
     }
+
+    private void handlePark(){
+        currentVehicle = frame.getLatestVehicle();
+        JOptionPane.showMessageDialog(this, 
+            "Parking flow started for " + currentVehicle.getType() + " with plate " + currentVehicle.getPlateNum() + 
+            "\n (Backend integration will assign spot)");
+    }
+
+    private void handleExit() {
+        currentVehicle = frame.getLatestVehicle();
+        JOptionPane.showMessageDialog(this,
+            "Exit flow started for vehicle " + currentVehicle.getPlateNum() + 
+            "\n(Backedn integration will release spot and add revenue)");
+    }
+
+    
 }
 
