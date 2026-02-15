@@ -8,7 +8,9 @@ target/
 *.class
 
 # Eclipse / Java project metadata (keep root project files)
-.settings/
+!.settings/
+.settings/*
+!.settings/org.eclipse.jdt.core.prefs
 .metadata/
 
 # IDE/editor files
