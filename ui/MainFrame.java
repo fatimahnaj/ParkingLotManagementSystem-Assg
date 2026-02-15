@@ -1,11 +1,14 @@
 package ui;
+import admin.AdminDB;
+import admin.AdminDashboard;
+import admin.AdminRepo;
 import java.awt.*;
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
+import models.parking.ParkingLot;
 import models.vehicle.Car;
 import models.vehicle.Vehicle;
-import models.parking.ParkingLot;
 
 
 //this is where we place all the objects, screens
@@ -21,7 +24,7 @@ public class MainFrame extends JFrame {
     public MainFrame() {
 
         setTitle("Multi Screen App");
-        setSize(500, 300);
+        setSize(1000, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -30,18 +33,21 @@ public class MainFrame extends JFrame {
         container = new JPanel(cardLayout);
 
         initData();
+        AdminDB db = new AdminDB("parking.db");
 
         // Create screens
         Dashboard screen1 = new Dashboard(this);
         customerDashboard = new CustomerDashboard(this);
         Screen3 screen3 = new Screen3(this);
         CustomerScreen customerscreen = new CustomerScreen(this, new ParkingLot("MyLot"));
+        AdminDashboard adminDashboard = new AdminDashboard(this, new AdminRepo(db));
 
         // Add screens
         container.add(screen1, "SCREEN1");
         container.add(customerDashboard, "SCREEN2");
         container.add(screen3, "SCREEN3");
         container.add(customerscreen, "CUSTOMERSCREEN");
+        container.add(adminDashboard, "ADMINDASHBOARD");
         
 
         add(container);

@@ -1,11 +1,13 @@
 package admin;
 
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
+import ui.MainFrame;
 
 public class AdminDashboard extends JPanel {
 
+    private final MainFrame frame;
     private final AdminRepo repo;
 
     private final DefaultTableModel parkedModel =
@@ -23,7 +25,8 @@ public class AdminDashboard extends JPanel {
     private final JLabel revenueLabel = new JLabel();
     private final JComboBox<String> policyBox = new JComboBox<>(new String[]{"A", "B", "C"});
 
-    public AdminDashboard(AdminRepo repo) {
+    public AdminDashboard(MainFrame frame,AdminRepo repo) {
+        this.frame = frame;
         this.repo = repo;
 
         setLayout(new BorderLayout(10, 10));
@@ -117,7 +120,8 @@ public class AdminDashboard extends JPanel {
             f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             f.setSize(900, 600);
             f.setLocationRelativeTo(null);
-            f.setContentPane(new AdminDashboard(new AdminRepo(db)));
+            MainFrame frame = new MainFrame(); 
+            f.setContentPane(new AdminDashboard(frame, new AdminRepo(db)));
             f.setVisible(true);
         });
     }

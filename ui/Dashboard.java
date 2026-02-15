@@ -26,7 +26,7 @@ class Dashboard extends JPanel {
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         JButton adminBtn = new JButton("admin");
-        adminBtn.addActionListener(e -> frame.showScreen("SCREEN3"));
+        adminBtn.addActionListener(e -> frame.showScreen("ADMINDASHBOARD"));
         bottomPanel.add(adminBtn, BorderLayout.EAST);
 
         JButton customerBtn = new JButton("Customer");
