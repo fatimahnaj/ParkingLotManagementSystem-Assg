@@ -1,0 +1,18 @@
+{
+    "java.project.sourcePaths": [
+        "."
+    ],
+    "java.project.outputPath": "bin",
+    "java.project.referencedLibraries": [
+        "lib/sqlite-jdbc-3.51.1.0.jar"
+    ],
+    "java.import.exclusions": [
+        "**/bin/**",
+        "**/.git/**",
+        "**/Material/**"
+    ],
+    "java.project.resourceFilters": [
+        "bin",
+        ".git"
+    ]
+}
