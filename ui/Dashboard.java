@@ -36,6 +36,7 @@ class Dashboard extends JPanel {
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.add(registerBtn, new GridBagConstraints());
         add(centerPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
     }
 
     //popup utk registration vehicle
