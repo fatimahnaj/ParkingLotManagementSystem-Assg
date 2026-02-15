@@ -18,18 +18,15 @@ class Dashboard extends JPanel {
         this.frame = frame;
 
         setLayout(new BorderLayout());
-        
 
         JButton registerBtn = new JButton("Register");
         Dimension registerBtnSize = new Dimension(150, 40);
         registerBtn.setPreferredSize(registerBtnSize);
         registerBtn.addActionListener(e-> registerPopup());
-        //registerBtn.addActionListener(e -> frame.showScreen("SCREEN2")); //switch screen
-
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         JButton adminBtn = new JButton("admin");
-        adminBtn.addActionListener(e -> frame.showScreen("SCREEN3"));
+        adminBtn.addActionListener(e -> frame.showScreen("ADMINDASHBOARD"));
         bottomPanel.add(adminBtn, BorderLayout.EAST);
 
         JButton customerBtn = new JButton("Customer");
@@ -39,8 +36,10 @@ class Dashboard extends JPanel {
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.add(registerBtn, new GridBagConstraints());
         add(centerPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
     }
 
+    //popup utk registration vehicle
     private void registerPopup() {
         JPanel panel = new JPanel(new GridLayout(2,2,1,1));
         JTextField plateField = new JTextField(15);
@@ -62,7 +61,7 @@ class Dashboard extends JPanel {
 
         //handling the result from the popup
         int result = JOptionPane.showConfirmDialog(
-                this,panel,"Create new Seminar",
+                this,panel,"Vehicle registration",
                 JOptionPane.OK_CANCEL_OPTION,
                 JOptionPane.PLAIN_MESSAGE);
 

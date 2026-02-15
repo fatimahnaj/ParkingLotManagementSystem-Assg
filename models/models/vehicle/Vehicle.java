@@ -32,12 +32,8 @@ public class Vehicle {
         return Duration.between(entryTime, exitTime).toMinutes();
     }
 
-    public long getParkedMinutes(LocalDateTime checkoutTime) {
-        if (entryTime == null || checkoutTime == null) {
-            return 0;
-        }
-        long minutes = Duration.between(entryTime, checkoutTime).toMinutes();
-        return Math.max(0, minutes);
+    public String getType(){
+        return type;
     }
 
     public String getPlateNum(){
