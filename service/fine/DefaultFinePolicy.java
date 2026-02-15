@@ -28,13 +28,17 @@ public class DefaultFinePolicy implements FinePolicy {
 
     @Override
     public double computeOverstayFine(long parkedMinutes) {
+        return computeOverstayFine(parkedMinutes, finePolicyOptionSupplier.get());
+    }
+
+    @Override
+    public double computeOverstayFine(long parkedMinutes, String policyOption) {
         long overstayMinutes = parkedMinutes - OVERSTAY_THRESHOLD_MINUTES;
         if (overstayMinutes <= 0) {
             return 0.0;
         }
 
-        String policy = finePolicyOptionSupplier.get();
-        String normalized = policy == null ? "A" : policy.trim().toUpperCase();
+        String normalized = policyOption == null ? "A" : policyOption.trim().toUpperCase();
         switch (normalized) {
             case "B":
                 return computeProgressiveFine(parkedMinutes);

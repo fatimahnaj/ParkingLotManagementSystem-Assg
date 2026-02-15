@@ -15,11 +15,13 @@ public class SqliteParkingSessionRepository {
         private final int sessionId;
         private final String spotId;
         private final LocalDateTime entryTime;
+        private final String finePolicyOption;
 
-        public ActiveSessionRecord(int sessionId, String spotId, LocalDateTime entryTime) {
+        public ActiveSessionRecord(int sessionId, String spotId, LocalDateTime entryTime, String finePolicyOption) {
             this.sessionId = sessionId;
             this.spotId = spotId;
             this.entryTime = entryTime;
+            this.finePolicyOption = finePolicyOption;
         }
 
         public int getSessionId() {
@@ -32,6 +34,10 @@ public class SqliteParkingSessionRepository {
 
         public LocalDateTime getEntryTime() {
             return entryTime;
+        }
+
+        public String getFinePolicyOption() {
+            return finePolicyOption;
         }
     }
 
@@ -52,12 +58,13 @@ public class SqliteParkingSessionRepository {
         upsertVehicle(plate, ticket.getVehicle().getType());
         upsertParkingSpot(ticket.getParkingSpot(), "occupied");
 
-        String sql = "INSERT INTO parking_sessions(plate, spot_id, entry_time, is_paid) VALUES(?, ?, ?, 0)";
+        String sql = "INSERT INTO parking_sessions(plate, spot_id, entry_time, fine_policy, is_paid) VALUES(?, ?, ?, ?, 0)";
         try (Connection c = db.getConnection();
              PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, plate);
             ps.setString(2, ticket.getParkingSpot().getSpotID());
             ps.setString(3, entryTime.toString());
+            ps.setString(4, getCurrentFinePolicyOption());
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -73,7 +80,7 @@ public class SqliteParkingSessionRepository {
 
     public ActiveSessionRecord findActiveSessionByPlate(String plate) {
         String sql = """
-            SELECT session_id, spot_id, entry_time
+            SELECT session_id, spot_id, entry_time, fine_policy
             FROM parking_sessions
             WHERE plate = ? AND exit_time IS NULL
             ORDER BY session_id DESC
@@ -88,7 +95,8 @@ public class SqliteParkingSessionRepository {
                     return new ActiveSessionRecord(
                         rs.getInt("session_id"),
                         rs.getString("spot_id"),
-                        LocalDateTime.parse(entryText)
+                        LocalDateTime.parse(entryText),
+                        normalizeFinePolicy(rs.getString("fine_policy"))
                     );
                 }
             }
@@ -99,9 +107,22 @@ public class SqliteParkingSessionRepository {
     }
 
     public void completeSession(int sessionId, LocalDateTime exitTime, double feeAmount, double fineAmount, boolean paid) {
+        completeSession(sessionId, exitTime, feeAmount, fineAmount, paid, "UNKNOWN", feeAmount + fineAmount, 0.0);
+    }
+
+    public void completeSession(
+        int sessionId,
+        LocalDateTime exitTime,
+        double feeAmount,
+        double fineAmount,
+        boolean paid,
+        String paymentMethod,
+        double amountPaid,
+        double remainingBalance
+    ) {
         String sql = """
             UPDATE parking_sessions
-            SET exit_time = ?, fee_amount = ?, fine_amount = ?, is_paid = ?
+            SET exit_time = ?, fee_amount = ?, fine_amount = ?, is_paid = ?, payment_method = ?, amount_paid = ?, remaining_balance = ?
             WHERE session_id = ?
         """;
         try (Connection c = db.getConnection();
@@ -110,7 +131,10 @@ public class SqliteParkingSessionRepository {
             ps.setDouble(2, feeAmount);
             ps.setDouble(3, fineAmount);
             ps.setInt(4, paid ? 1 : 0);
-            ps.setInt(5, sessionId);
+            ps.setString(5, paymentMethod == null ? "UNKNOWN" : paymentMethod);
+            ps.setDouble(6, amountPaid);
+            ps.setDouble(7, remainingBalance);
+            ps.setInt(8, sessionId);
             ps.executeUpdate();
         } catch (SQLException e) {
             System.out.println("[SqliteParkingSessionRepository] completeSession error: " + e.getMessage());
@@ -261,9 +285,13 @@ public class SqliteParkingSessionRepository {
                 spot_id     TEXT NOT NULL,
                 entry_time  TEXT NOT NULL,
                 exit_time   TEXT,
+                fine_policy TEXT NOT NULL DEFAULT 'A',
                 fee_amount  REAL NOT NULL DEFAULT 0,
                 fine_amount REAL NOT NULL DEFAULT 0,
-                is_paid     INTEGER NOT NULL DEFAULT 0
+                is_paid     INTEGER NOT NULL DEFAULT 0,
+                payment_method TEXT NOT NULL DEFAULT 'UNKNOWN',
+                amount_paid REAL NOT NULL DEFAULT 0,
+                remaining_balance REAL NOT NULL DEFAULT 0
             )
         """;
         String finesSql = """
@@ -294,8 +322,54 @@ public class SqliteParkingSessionRepository {
             st.execute(finesSql);
             st.execute(settingsSql);
             st.execute(defaultPolicySql);
+            ensureSessionColumns(c);
         } catch (SQLException e) {
             System.out.println("[SqliteParkingSessionRepository] ensureSchema error: " + e.getMessage());
         }
+    }
+
+    private void ensureSessionColumns(Connection c) throws SQLException {
+        ensureColumn(c, "parking_sessions", "fine_policy", "TEXT NOT NULL DEFAULT 'A'");
+        ensureColumn(c, "parking_sessions", "payment_method", "TEXT NOT NULL DEFAULT 'UNKNOWN'");
+        ensureColumn(c, "parking_sessions", "amount_paid", "REAL NOT NULL DEFAULT 0");
+        ensureColumn(c, "parking_sessions", "remaining_balance", "REAL NOT NULL DEFAULT 0");
+    }
+
+    private void ensureColumn(Connection c, String table, String column, String definition) throws SQLException {
+        String pragma = "PRAGMA table_info(" + table + ")";
+        boolean exists = false;
+        try (Statement st = c.createStatement();
+             ResultSet rs = st.executeQuery(pragma)) {
+            while (rs.next()) {
+                if (column.equalsIgnoreCase(rs.getString("name"))) {
+                    exists = true;
+                    break;
+                }
+            }
+        }
+        if (!exists) {
+            try (Statement st = c.createStatement()) {
+                st.execute("ALTER TABLE " + table + " ADD COLUMN " + column + " " + definition);
+            }
+        }
+    }
+
+    private String getCurrentFinePolicyOption() {
+        String sql = "SELECT value FROM admin_settings WHERE key='fine_policy'";
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            return rs.next() ? normalizeFinePolicy(rs.getString(1)) : "A";
+        } catch (SQLException e) {
+            return "A";
+        }
+    }
+
+    private String normalizeFinePolicy(String option) {
+        if (option == null) {
+            return "A";
+        }
+        String x = option.trim().toUpperCase();
+        return (x.equals("A") || x.equals("B") || x.equals("C")) ? x : "A";
     }
 }

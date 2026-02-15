@@ -1,6 +1,7 @@
 package ui;
 import java.awt.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.swing.*;
 
@@ -157,7 +158,10 @@ class CustomerDashboard extends JPanel {
 
         LocalDateTime checkoutTime = LocalDateTime.now();
         currentVehicle.setExitTime(checkoutTime);
-        BillingBreakdownDto bill = frame.getBillingService().calculatePayable(activeTicket, checkoutTime);
+        SqliteParkingSessionRepository.ActiveSessionRecord activeSessionRecord =
+            frame.getParkingSessionRepository().findActiveSessionByPlate(currentVehicle.getPlateNum());
+        String sessionPolicy = activeSessionRecord == null ? null : activeSessionRecord.getFinePolicyOption();
+        BillingBreakdownDto bill = frame.getBillingService().calculatePayable(activeTicket, checkoutTime, sessionPolicy);
 
         boolean hasOutstandingFine = bill.getOutstandingFineTotal() > 0.0;
         boolean payFinesNow = true;
@@ -182,7 +186,22 @@ class CustomerDashboard extends JPanel {
         }
 
         double payableNow = payFinesNow ? bill.getPayableTotal() : bill.getNetParkingCharge();
-        String receiptText = buildReceiptText(currentVehicle, activeTicket, bill, payFinesNow, payableNow);
+        PaymentInput paymentInput = collectPaymentInput(payableNow);
+        if (paymentInput == null) {
+            return;
+        }
+
+        String receiptText = buildReceiptText(
+            currentVehicle,
+            activeTicket,
+            bill,
+            payFinesNow,
+            payableNow,
+            checkoutTime,
+            paymentInput.method,
+            paymentInput.amountPaid,
+            paymentInput.remainingBalance
+        );
 
         int confirm = JOptionPane.showConfirmDialog(
             this,
@@ -216,7 +235,10 @@ class CustomerDashboard extends JPanel {
                 checkoutTime,
                 bill.getNetParkingCharge(),
                 finePaid,
-                true
+                true,
+                paymentInput.method,
+                paymentInput.amountPaid,
+                paymentInput.remainingBalance
             );
         }
         frame.getParkingSessionRepository().updateSpotStatus(activeTicket.getParkingSpot().getSpotID(), "free");
@@ -356,12 +378,19 @@ class CustomerDashboard extends JPanel {
         Ticket ticket,
         BillingBreakdownDto bill,
         boolean payFinesNow,
-        double payableNow
+        double payableNow,
+        LocalDateTime checkoutTime,
+        String paymentMethod,
+        double amountPaid,
+        double remainingBalance
     ) {
         StringBuilder builder = new StringBuilder();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         builder.append("===== EXIT RECEIPT =====\n");
         builder.append("Plate Number        : ").append(vehicle.getPlateNum()).append("\n");
         builder.append("Spot ID             : ").append(ticket.getParkingSpot().getSpotID()).append("\n");
+        builder.append("Entry Time          : ").append(vehicle.getFormattedEntryTime()).append("\n");
+        builder.append("Exit Time           : ").append(checkoutTime.format(formatter)).append("\n");
         builder.append("Parked Minutes      : ").append(bill.getParkedMinutes()).append(" min\n");
         builder.append("Billable Hours      : ").append(bill.getBillableHours()).append(" hour(s)\n");
         builder.append("Parking Fee         : RM ")
@@ -380,7 +409,66 @@ class CustomerDashboard extends JPanel {
         builder.append("------------------------------\n");
         builder.append("TOTAL PAY NOW       : RM ")
             .append(String.format("%.2f", payableNow)).append("\n");
+        builder.append("Payment Method      : ").append(paymentMethod).append("\n");
+        builder.append("Amount Paid         : RM ").append(String.format("%.2f", amountPaid)).append("\n");
+        builder.append("Remaining Balance   : RM ").append(String.format("%.2f", remainingBalance)).append("\n");
         return builder.toString();
+    }
+
+    private PaymentInput collectPaymentInput(double payableNow) {
+        Object[] paymentOptions = {"Cash", "Card", "Cancel"};
+        int paymentChoice = JOptionPane.showOptionDialog(
+            this,
+            "Select payment method.",
+            "Payment Method",
+            JOptionPane.DEFAULT_OPTION,
+            JOptionPane.QUESTION_MESSAGE,
+            null,
+            paymentOptions,
+            paymentOptions[0]
+        );
+        if (paymentChoice == 2 || paymentChoice == JOptionPane.CLOSED_OPTION) {
+            return null;
+        }
+
+        if (paymentChoice == 1) {
+            return new PaymentInput("CARD", payableNow, 0.0);
+        }
+
+        String input = JOptionPane.showInputDialog(
+            this,
+            "Enter cash amount received (RM):",
+            String.format("%.2f", payableNow)
+        );
+        if (input == null) {
+            return null;
+        }
+        try {
+            double cashReceived = Double.parseDouble(input.trim());
+            if (cashReceived < payableNow) {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "Insufficient cash. Need at least RM " + String.format("%.2f", payableNow) + "."
+                );
+                return null;
+            }
+            return new PaymentInput("CASH", cashReceived, cashReceived - payableNow);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid cash amount.");
+            return null;
+        }
+    }
+
+    private static class PaymentInput {
+        private final String method;
+        private final double amountPaid;
+        private final double remainingBalance;
+
+        private PaymentInput(String method, double amountPaid, double remainingBalance) {
+            this.method = method;
+            this.amountPaid = amountPaid;
+            this.remainingBalance = remainingBalance;
+        }
     }
  
     

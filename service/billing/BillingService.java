@@ -28,6 +28,10 @@ public class BillingService {
     }
 
     public BillingBreakdownDto calculatePayable(Ticket ticket, LocalDateTime checkoutTime) {
+        return calculatePayable(ticket, checkoutTime, null);
+    }
+
+    public BillingBreakdownDto calculatePayable(Ticket ticket, LocalDateTime checkoutTime, String finePolicyOption) {
         LocalDateTime entryTime = ticket.getVehicle().getEntryTime();
         long parkedMinutes =
             (entryTime == null || checkoutTime == null)
@@ -39,7 +43,10 @@ public class BillingService {
         double baseFee = hourlyRate * billableHours;
         double discountAmount = discountPolicy.computeDiscount(ticket, billableHours, baseFee);
 
-        FineSummaryDto currentFineSummary = fineService.evaluateCurrentSessionFines(ticket, parkedMinutes);
+        FineSummaryDto currentFineSummary =
+            finePolicyOption == null
+                ? fineService.evaluateCurrentSessionFines(ticket, parkedMinutes)
+                : fineService.evaluateCurrentSessionFines(ticket, parkedMinutes, finePolicyOption);
         double unpaidPrevious = unpaidFineRepository.getUnpaidFineTotal(ticket.getVehicle().getPlateNum());
 
         return new BillingBreakdownDto(
