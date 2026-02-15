@@ -1,4 +1,4 @@
-package vehicle;
+package models.vehicle;
 public class SUV extends Vehicle {
     public SUV(String plateNum, String type) {
         super(plateNum, "SUV");

@@ -1,8 +1,12 @@
+import java.time.LocalDateTime;
 import java.util.Scanner;
-import vehicle.*;
+import models.vehicle.*;
 
 public class fTest {
     public static void main(String[] args) {
+
+        //scanner - to get input
+        Scanner sc = new Scanner(System.in);
         
         while (true) {
         System.out.println("\n==== Parking Lot Management System ====");
@@ -11,9 +15,6 @@ public class fTest {
         System.out.println("1) Park Vehicle (Entry)");
         System.out.println("2) Exit Vehicle");
         System.out.println("0) Logout / Quit");
-
-            //scanner - to get input
-            Scanner sc = new Scanner(System.in);
 
             System.out.print("Choose: ");
             String choice = sc.nextLine().trim();
@@ -57,13 +58,15 @@ public class fTest {
                             v1 = new Handicapped(plateNumValue, "Handicapped");
                             break;
                         default:
-                            System.err.println("SABAJAP LOM SETUP");
+                            System.err.println("Kau pilih apa nyah.");
                             v1 = null;
                             break;
                     }
 
                     //print data of the vehicle if entry is succeed
                     if (v1 != null) {
+                        //Entry time is counted only once customer selected parking spot
+                        v1.setEntryTime(LocalDateTime.now());
                         System.out.println(v1);
                     }
 
@@ -85,5 +88,6 @@ public class fTest {
                 System.out.println("ERROR: " + e.getMessage());
             }
         }
+        sc.close();
     }
 }
