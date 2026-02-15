@@ -1,5 +1,6 @@
 package service.billing;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 import dto.billing.BillingBreakdownDto;
@@ -27,7 +28,11 @@ public class BillingService {
     }
 
     public BillingBreakdownDto calculatePayable(Ticket ticket, LocalDateTime checkoutTime) {
-        long parkedMinutes = ticket.getVehicle().getParkedMinutes(checkoutTime);
+        LocalDateTime entryTime = ticket.getVehicle().getEntryTime();
+        long parkedMinutes =
+            (entryTime == null || checkoutTime == null)
+                ? 0
+                : Math.max(0, Duration.between(entryTime, checkoutTime).toMinutes());
         long billableHours = billingPolicy.computeBillableHours(parkedMinutes);
 
         double hourlyRate = ticket.getParkingSpot().getType().getHourlyRate();

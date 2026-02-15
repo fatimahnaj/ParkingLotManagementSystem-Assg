@@ -90,10 +90,12 @@ public class MainFrame extends JFrame {
     public void showScreen(String name) {
         cardLayout.show(container, name);
     }
-
-    public void addVehicle(Vehicle vehicle) {
-        System.out.println("Vehicle added: " + vehicle);
-    }
+ 
+    //dupliated 
+    
+    // public void addVehicle(Vehicle vehicle) {
+    //     System.out.println("Vehicle added: " + vehicle);
+    // }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainFrame::new);

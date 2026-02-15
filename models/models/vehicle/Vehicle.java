@@ -32,9 +32,11 @@ public class Vehicle {
         return Duration.between(entryTime, exitTime).toMinutes();
     }
 
-    public String getType(){
-        return type;
-    }
+
+    //duplicated 
+    // public String getType(){
+    //     return type;
+    // }
 
     public String getPlateNum(){
         return plateNum;

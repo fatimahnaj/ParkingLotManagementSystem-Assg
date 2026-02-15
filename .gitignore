@@ -1,1 +1,22 @@
+# Build output
+bin/
+out/
+build/
+target/
+
+# Java compiled classes
 *.class
+
+# Eclipse / Java project metadata (keep root project files)
+.settings/
+.metadata/
+
+# IDE/editor files
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+
+# So every bad file in the folder is ignored by git
