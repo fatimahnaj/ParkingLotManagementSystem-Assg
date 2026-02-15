@@ -104,7 +104,7 @@ class CustomerDashboard extends JPanel {
                 currentVehicle.setEntryTime(LocalDateTime.now());
                 frame.addVehicle(currentVehicle);
                 System.out.println(currentVehicle);
-                JOptionPane.showMessageDialog(panel, "Registration successful.");
+                JOptionPane.showMessageDialog(panel, "Spot selection is successful. \n Please head to your parking spot : \n Nanti tims generate ticket kat sini.");
                 refresh();
             }
     }

@@ -3,6 +3,8 @@ import admin.AdminDB;
 import admin.AdminDashboard;
 import admin.AdminRepo;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
@@ -20,6 +22,7 @@ public class MainFrame extends JFrame {
     private JPanel container;
     private final List<Vehicle> vehicles = new ArrayList<>();
     private CustomerDashboard customerDashboard;
+    private AdminDB db;
 
     public MainFrame() {
 
@@ -35,7 +38,7 @@ public class MainFrame extends JFrame {
         //initialise data for current run
         initData();
         //retrieve database for admin
-        AdminDB db = new AdminDB("parking.db");
+        db = new AdminDB("parking.db");
 
         // Create screens
         Dashboard screen1 = new Dashboard(this);
@@ -77,6 +80,20 @@ public class MainFrame extends JFrame {
         }
     }
 
+    //save new vehicle to database
+    public void saveNewVehicle(Vehicle v) {
+        String sql = "INSERT OR IGNORE INTO vehicles VALUES (?, ?, 0)";
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setString(1, v.getPlateNum());
+            ps.setString(2, v.getType());
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
     //get latest created vehicle obj
     public Vehicle getLatestVehicle(){
         if (vehicles.isEmpty()) {
