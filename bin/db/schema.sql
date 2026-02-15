@@ -16,7 +16,9 @@ CREATE TABLE IF NOT EXISTS parking_spots (
 CREATE TABLE IF NOT EXISTS vehicles (
     plate        TEXT PRIMARY KEY,
     vehicle_type TEXT NOT NULL,
-    is_vip       INTEGER NOT NULL DEFAULT 0
+    is_vip       INTEGER NOT NULL DEFAULT 0,
+    entry_time   TEXT,
+    exit_time    TEXT
 );
 
 -- Parking sessions (main report table)
