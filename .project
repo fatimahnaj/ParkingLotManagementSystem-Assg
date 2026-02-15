@@ -21,7 +21,7 @@
 			<type>30</type>
 			<matcher>
 				<id>org.eclipse.core.resources.regexFilterMatcher</id>
-				<arguments>bin|.git|__CREATED_BY_JAVA_LANGUAGE_SERVER__</arguments>
+				<arguments>.git|__CREATED_BY_JAVA_LANGUAGE_SERVER__</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>
