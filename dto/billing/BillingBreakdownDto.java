@@ -56,6 +56,18 @@ public class BillingBreakdownDto {
         return payableTotal;
     }
 
+    public double getNetParkingCharge() {
+        return baseFee - discountAmount;
+    }
+
+    public double getCurrentSessionFineTotal() {
+        return currentFineSummary.getTotalFine();
+    }
+
+    public double getOutstandingFineTotal() {
+        return unpaidPreviousFines + currentFineSummary.getTotalFine();
+    }
+
     public String toDetailedBill() {
         StringBuilder builder = new StringBuilder();
         builder.append("===== BILL BREAKDOWN =====\n");

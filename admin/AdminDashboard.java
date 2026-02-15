@@ -20,7 +20,7 @@ public class AdminDashboard extends JPanel {
             new DefaultTableModel(new Object[]{"Type", "Total", "Occupied"}, 0);
 
     private final DefaultTableModel fineModel =
-            new DefaultTableModel(new Object[]{"Plate", "Fine Type", "Amount (RM)"}, 0);
+            new DefaultTableModel(new Object[]{"Plate", "Fine Type", "Amount (RM)", "Status", "Created At"}, 0);
 
     private final JLabel revenueLabel = new JLabel();
     private final JComboBox<String> policyBox = new JComboBox<>(new String[]{"A", "B", "C"});
@@ -102,7 +102,13 @@ public class AdminDashboard extends JPanel {
         // fines
         fineModel.setRowCount(0);
         for (AdminRepo.FineRow r : repo.getUnpaidFines()) {
-            fineModel.addRow(new Object[]{r.plate, r.fineType, String.format("%.2f", r.amount)});
+            fineModel.addRow(new Object[]{
+                r.plate,
+                r.fineType,
+                String.format("%.2f", r.amount),
+                r.status,
+                r.createdAt
+            });
         }
 
         // revenue
@@ -111,7 +117,7 @@ public class AdminDashboard extends JPanel {
                 rev.totalFees, rev.totalFines, rev.total()));
     }
 
-    // quick test run
+    // quick test run (Instantiation of AdminDashboard) terus bukak admin dashboard no need log in
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             AdminDB db = new AdminDB("parking.db");
