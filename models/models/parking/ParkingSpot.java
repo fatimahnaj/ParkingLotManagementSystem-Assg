@@ -1,6 +1,5 @@
 package models.parking;
 import models.vehicle.Vehicle;
-import models.parking.ParkingLot;
 
 
 public class ParkingSpot {
@@ -32,6 +31,7 @@ public class ParkingSpot {
 
     public void releaseSpot(){
         this.currentVehicle = null;
+        this.plateNum = null;
         this.occupied = false;
     }
 
@@ -53,6 +53,14 @@ public class ParkingSpot {
     
     public String getPlateNum() {
         return plateNum;
+    }
+
+    public boolean isReservedSpot() {
+        return type == SpotType.RESERVED;
+    }
+
+    public boolean isHandicappedSpot() {
+        return type == SpotType.HANDICAPPED;
     }
 
     @Override

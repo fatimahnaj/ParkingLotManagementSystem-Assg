@@ -9,12 +9,14 @@ public class Vehicle {
     protected String type;
     protected LocalDateTime entryTime;
     protected LocalDateTime exitTime;
+    protected boolean handicappedCardHolder;
     //private String fine;
 
     //must pass in these data waktu nk create vehicle (WAJIBB)
     public Vehicle(String plateNum, String type) {
         this.plateNum = plateNum;
         this.type = type;
+        this.handicappedCardHolder = false;
     }
 
     public void setEntryTime(LocalDateTime entryTime) {
@@ -30,6 +32,14 @@ public class Vehicle {
         return Duration.between(entryTime, exitTime).toMinutes();
     }
 
+    public long getParkedMinutes(LocalDateTime checkoutTime) {
+        if (entryTime == null || checkoutTime == null) {
+            return 0;
+        }
+        long minutes = Duration.between(entryTime, checkoutTime).toMinutes();
+        return Math.max(0, minutes);
+    }
+
     public String getPlateNum(){
         return plateNum;
     }
@@ -40,6 +50,18 @@ public class Vehicle {
 
     public LocalDateTime getExitTime(){
         return exitTime;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public boolean isHandicappedCardHolder() {
+        return handicappedCardHolder;
+    }
+
+    public void setHandicappedCardHolder(boolean handicappedCardHolder) {
+        this.handicappedCardHolder = handicappedCardHolder;
     }
 
     //get entry/exit time with better format
