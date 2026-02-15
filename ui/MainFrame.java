@@ -27,9 +27,6 @@ public class MainFrame extends JFrame {
     private CustomerDashboard customerDashboard;
     private AdminDB db;
     private AdminLogin adminLogin;
-=========
-    private AdminDB db;
->>>>>>>>> Temporary merge branch 2
 
     public MainFrame() {
 
