@@ -48,12 +48,18 @@ public class Vehicle {
 
     //get entry/exit time with better format
     public String getFormattedEntryTime(){
+        if (entryTime == null) {
+            return "N/A";
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedEntryTime = entryTime.format(formatter);
         return formattedEntryTime;
     }
 
     public String getFormattedExitTime(){
+        if (exitTime == null) {
+            return "N/A";
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedExitTime = exitTime.format(formatter);
         return formattedExitTime;

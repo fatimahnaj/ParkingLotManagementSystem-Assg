@@ -73,11 +73,12 @@ public class MainFrame extends JFrame {
         loadVehiclesFromDb(); // load all vehicle from DB into vehicles arraylist
     }
 
+    
+
     //get the vehicle objects
     public List<Vehicle> getVehicles(){
         return vehicles;
     }
-
     //add a new vehicle obj into the list
     public void addVehicle(Vehicle v){
         vehicles.add(v);

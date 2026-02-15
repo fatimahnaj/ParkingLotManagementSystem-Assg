@@ -2,13 +2,7 @@ package ui;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
 import javax.swing.*;
-
-import models.vehicle.Car;
-import models.vehicle.Handicapped;
-import models.vehicle.Motorcycle;
-import models.vehicle.SUV;
 import models.vehicle.Vehicle;
 
 class CustomerDashboard extends JPanel {
@@ -24,8 +18,8 @@ class CustomerDashboard extends JPanel {
         this.frame = frame;
         setLayout(new BorderLayout());
 
-        plateLabel = new JLabel();
-        vehicleTypeLabel = new JLabel();
+        plateLabel = new JLabel("",SwingConstants.CENTER);
+        vehicleTypeLabel = new JLabel("",SwingConstants.CENTER);
 
         JButton parkBtn = new JButton("Park");
         parkBtn.setPreferredSize(new Dimension(150, 40));
@@ -48,7 +42,7 @@ class CustomerDashboard extends JPanel {
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
         labelsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        centerPanel.add(labelsPanel, BorderLayout.NORTH);
+        centerPanel.add(labelsPanel, BorderLayout.CENTER);
         centerPanel.add(Box.createVerticalStrut(16));
         centerPanel.add(buttonsPanel);
         add(centerPanel, BorderLayout.CENTER);

@@ -106,6 +106,7 @@ class Dashboard extends JPanel {
                 if (v != null) {
                     System.out.println(v);
                     JOptionPane.showMessageDialog(panel, "Registration successful.");
+                    frame.addVehicle(v);
                     frame.showScreen("SCREEN2");
                 } else {
                     JOptionPane.showMessageDialog(panel, "Error: Failed to create vehicle.");
