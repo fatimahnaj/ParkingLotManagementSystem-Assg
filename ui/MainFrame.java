@@ -4,11 +4,15 @@ import admin.AdminRepo;
 import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 import models.parking.ParkingLot;
 import models.vehicle.Car;
+import models.vehicle.Handicapped;
+import models.vehicle.Motorcycle;
+import models.vehicle.SUV;
 import models.vehicle.Vehicle;
 
 
@@ -21,8 +25,11 @@ public class MainFrame extends JFrame {
     private JPanel container;
     private final List<Vehicle> vehicles = new ArrayList<>();
     private CustomerDashboard customerDashboard;
-    private AdminLogin adminLogin;
     private AdminDB db;
+    private AdminLogin adminLogin;
+=========
+    private AdminDB db;
+>>>>>>>>> Temporary merge branch 2
 
     public MainFrame() {
 
@@ -66,6 +73,7 @@ public class MainFrame extends JFrame {
     private void initData(){
         Vehicle dummyVehicle = new Car("BMX9800","Car");
         vehicles.add(dummyVehicle);
+        loadVehiclesFromDb(); // load all vehicle from DB into vehicles arraylist
     }
 
     //get the vehicle objects
@@ -83,18 +91,125 @@ public class MainFrame extends JFrame {
 
     //save new vehicle to database
     public void saveNewVehicle(Vehicle v) {
-        String sql = "INSERT OR IGNORE INTO vehicles VALUES (?, ?, 0)";
+        String sql = "INSERT OR IGNORE INTO vehicles(plate, vehicle_type, is_vip, entry_time, exit_time) VALUES (?, ?, 0, ?, ?)";
         try (Connection c = db.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setString(1, v.getPlateNum());
             ps.setString(2, v.getType());
+            
+            // Handle entry_time (can be null or LocalDateTime)
+            if (v.getEntryTime() != null) {
+                ps.setString(3, v.getFormattedEntryTime());
+            } else {
+                ps.setNull(3, java.sql.Types.VARCHAR);
+            }
+            
+            // Handle exit_time (can be null or LocalDateTime)
+            if (v.getExitTime() != null) {
+                ps.setString(4, v.getFormattedExitTime());
+            } else {
+                ps.setNull(4, java.sql.Types.VARCHAR);
+            }
+
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    public Vehicle getStoredVehicle(String plate) {
+        return getStoredVehicle(plate, null);
+    }
+
+    public Vehicle getStoredVehicle(String plate, String vehicleType) {
+        if (plate == null) {
+            return null;
+        }
+
+        String trimmedPlate = plate.trim();
+        if (trimmedPlate.isEmpty()) {
+            return null;
+        }
+
+        String sql;
+        if (vehicleType != null && !vehicleType.trim().isEmpty()) {
+            sql = "SELECT plate, vehicle_type FROM vehicles WHERE plate = ? AND vehicle_type = ?";
+        } else {
+            sql = "SELECT plate, vehicle_type FROM vehicles WHERE plate = ?";
+        }
+
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setString(1, trimmedPlate);
+            if (vehicleType != null && !vehicleType.trim().isEmpty()) {
+                ps.setString(2, vehicleType.trim());
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String plateNum = rs.getString("plate");
+                    String type = rs.getString("vehicle_type");
+                    return createVehicleFromType(plateNum, type);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public void loadVehiclesFromDb() {
+        if (db == null) {
+            return;
+        }
+
+        String sql = "SELECT plate, vehicle_type FROM vehicles ORDER BY plate";
+        List<Vehicle> loaded = new ArrayList<>();
+
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                String plateNum = rs.getString("plate");
+                String type = rs.getString("vehicle_type");
+                loaded.add(createVehicleFromType(plateNum, type));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
+        }
+
+        vehicles.clear();
+        vehicles.addAll(loaded);
+        if (customerDashboard != null) {
+            customerDashboard.refresh();
+        }
+    }
+
+    private Vehicle createVehicleFromType(String plateNum, String type) {
+        if (type == null) {
+            return new Vehicle(plateNum, "Unknown");
+        }
+
+        switch (type.trim().toLowerCase()) {
+            case "motorcycle":
+                return new Motorcycle(plateNum, "Motorcycle");
+            case "car":
+                return new Car(plateNum, "Car");
+            case "suv":
+                return new SUV(plateNum, "SUV");
+            case "handicapped":
+                return new Handicapped(plateNum, "Handicapped");
+            default:
+                return new Vehicle(plateNum, type);
+        }
+    }
     
+
     //get latest created vehicle obj
     public Vehicle getLatestVehicle(){
         if (vehicles.isEmpty()) {
