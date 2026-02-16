@@ -48,10 +48,6 @@ public class Vehicle {
         return exitTime;
     }
 
-    public String getType() {
-        return type;
-    }
-
     public boolean isHandicappedCardHolder() {
         return handicappedCardHolder;
     }

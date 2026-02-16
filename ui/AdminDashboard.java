@@ -1,9 +1,9 @@
 package ui;
 
+import admin.AdminRepo;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import admin.AdminRepo;
 
 public class AdminDashboard extends JPanel {
 

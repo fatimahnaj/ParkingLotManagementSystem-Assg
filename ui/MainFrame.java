@@ -14,6 +14,18 @@ import models.vehicle.Handicapped;
 import models.vehicle.Motorcycle;
 import models.vehicle.SUV;
 import models.vehicle.Vehicle;
+import models.Ticket;
+import service.billing.BillingService;
+import service.billing.DefaultBillingPolicy;
+import service.billing.DefaultDiscountPolicy;
+import service.billing.PaymentService;
+import service.fine.DefaultFinePolicy;
+import service.fine.FineService;
+import service.persistence.SqliteFinePolicyRepository;
+import service.persistence.SqliteParkingSessionRepository;
+import service.persistence.SqliteUnpaidFineRepository;
+import service.persistence.UnpaidFineRepository;
+import util.ParkingLotInitializer;
 
 
 //this is where we place all the objects, screens
@@ -27,6 +39,15 @@ public class MainFrame extends JFrame {
     private CustomerDashboard customerDashboard;
     private AdminDB db;
     private AdminLogin adminLogin;
+    private final ParkingLot parkingLot;
+    private final UnpaidFineRepository unpaidFineRepository;
+    private final BillingService billingService;
+    private final PaymentService paymentService;
+    // added, uh delete la kalo nak nnti
+    private final SqliteParkingSessionRepository parkingSessionRepository;
+    private Ticket activeTicket;
+    // also added
+    private int activeSessionId = -1;
 
     public MainFrame() {
 
@@ -41,14 +62,25 @@ public class MainFrame extends JFrame {
 
         //initialise data for current run
         initData();
+        parkingLot = ParkingLotInitializer.createLot();
         //retrieve database for admin
         db = new AdminDB("parking.db");
+        parkingSessionRepository = new SqliteParkingSessionRepository(db);
+        unpaidFineRepository = new SqliteUnpaidFineRepository(db);
+        SqliteFinePolicyRepository finePolicyRepository = new SqliteFinePolicyRepository(db);
+        FineService fineService = new FineService(new DefaultFinePolicy(finePolicyRepository::getFinePolicyOption));
+        billingService = new BillingService(
+            new DefaultBillingPolicy(),
+            new DefaultDiscountPolicy(),
+            fineService,
+            unpaidFineRepository
+        );
+        paymentService = new PaymentService(unpaidFineRepository);
 
         // Create screens
         Dashboard screen1 = new Dashboard(this);
         customerDashboard = new CustomerDashboard(this);
         Screen3 screen3 = new Screen3(this);
-        CustomerScreen customerscreen = new CustomerScreen(this, new ParkingLot("MyLot"));
         AdminDashboard adminDashboard = new AdminDashboard(this, new AdminRepo(db));
         adminLogin = new AdminLogin(this, new AdminRepo(db));
 
@@ -56,7 +88,6 @@ public class MainFrame extends JFrame {
         container.add(screen1, "SCREEN1");
         container.add(customerDashboard, "SCREEN2");
         container.add(screen3, "SCREEN3");
-        container.add(customerscreen, "CUSTOMERSCREEN");
         container.add(adminDashboard, "ADMINDASHBOARD");
         container.add(adminLogin, "ADMINLOGIN");
         
@@ -260,6 +291,49 @@ public class MainFrame extends JFrame {
             adminLogin.resetForm();
         }
     }
+
+    //====UMMU'S
+    
+    public ParkingLot getParkingLot() {
+        return parkingLot;
+    }
+
+    public BillingService getBillingService() {
+        return billingService;
+    }
+
+    public PaymentService getPaymentService() {
+        return paymentService;
+    }
+
+    public Ticket getActiveTicket() {
+        return activeTicket;
+    }
+
+    public void setActiveTicket(Ticket activeTicket) {
+        this.activeTicket = activeTicket;
+    }
+
+    public void clearActiveTicket() {
+        this.activeTicket = null;
+    }
+
+    public SqliteParkingSessionRepository getParkingSessionRepository() {
+        return parkingSessionRepository;
+    }
+
+    public int getActiveSessionId() {
+        return activeSessionId;
+    }
+
+    public void setActiveSessionId(int activeSessionId) {
+        this.activeSessionId = activeSessionId;
+    }
+
+    public void clearActiveSessionId() {
+        this.activeSessionId = -1;
+    }
+ 
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainFrame::new);
