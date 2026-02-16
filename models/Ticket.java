@@ -6,9 +6,9 @@ import models.parking.ParkingSpot;
 import models.vehicle.Vehicle;
 
 public class Ticket {
-    private String ticketID; //ni guna bile eh
-    private Vehicle vehicle;
-    private ParkingSpot parkingSpot;
+    private final String ticketID; 
+    private final Vehicle vehicle;
+    private final ParkingSpot parkingSpot;
     private boolean isPaid;
     private boolean reservationPermit;
     private final LocalDateTime createdAt;

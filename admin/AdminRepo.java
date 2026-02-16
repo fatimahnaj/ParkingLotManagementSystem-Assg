@@ -1,6 +1,9 @@
 package admin;
 
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +13,7 @@ import java.util.List;
  */
 public class AdminRepo {
     private final AdminDB db;
+    private static final DateTimeFormatter ENTRY_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public AdminRepo(AdminDB db) {
         this.db = db;
@@ -91,13 +95,24 @@ public class AdminRepo {
                         rs.getString("vehicle_type"),
                         rs.getString("spot_id"),
                         rs.getString("spot_type"),
-                        rs.getString("entry_time")
+                        formatEntryTime(rs.getString("entry_time"))
                 ));
             }
         } catch (SQLException e) {
             System.out.println("[AdminRepo] getCurrentlyParked error: " + e.getMessage());
         }
         return out;
+    }
+
+    private String formatEntryTime(String entryTime) {
+        if (entryTime == null || entryTime.isBlank()) {
+            return "";
+        }
+        try {
+            return LocalDateTime.parse(entryTime).format(ENTRY_TIME_FORMAT);
+        } catch (DateTimeParseException e) {
+            return entryTime;
+        }
     }
 
     /** Occupancy by floor: counts spots + occupied spots. */
