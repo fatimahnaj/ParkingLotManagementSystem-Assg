@@ -41,14 +41,14 @@ public class MainFrame extends JFrame {
         Dashboard screen1 = new Dashboard(this);
         customerDashboard = new CustomerDashboard(this);
         Screen3 screen3 = new Screen3(this);
-        CustomerScreen customerscreen = new CustomerScreen(this, new ParkingLot("MyLot"));
+        //CustomerScreen customerscreen = new CustomerScreen(this, new ParkingLot("MyLot"));
         AdminDashboard adminDashboard = new AdminDashboard(this, new AdminRepo(db));
 
         // Add screens
         container.add(screen1, "SCREEN1");
         container.add(customerDashboard, "SCREEN2");
         container.add(screen3, "SCREEN3");
-        container.add(customerscreen, "CUSTOMERSCREEN");
+        //container.add(customerscreen, "CUSTOMERSCREEN");
         container.add(adminDashboard, "ADMINDASHBOARD");
         
 
@@ -72,6 +72,7 @@ public class MainFrame extends JFrame {
     //add a new vehicle obj into the list
     public void addVehicle(Vehicle v){
         vehicles.add(v);
+        System.out.println("Vehicle added: " + v);
         if (customerDashboard != null) {
             customerDashboard.refresh();
         }
@@ -91,9 +92,9 @@ public class MainFrame extends JFrame {
         cardLayout.show(container, name);
     }
 
-    public void addVehicle(Vehicle vehicle) {
-        System.out.println("Vehicle added: " + vehicle);
-    }
+    // public void addVehicle(Vehicle vehicle) {
+    //     System.out.println("Vehicle added: " + vehicle);
+    // }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(MainFrame::new);
