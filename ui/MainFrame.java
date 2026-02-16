@@ -78,14 +78,14 @@ public class MainFrame extends JFrame {
         paymentService = new PaymentService(unpaidFineRepository);
 
         // Create screens
-        Dashboard screen1 = new Dashboard(this);
+        Dashboard dashboard = new Dashboard(this);
         customerDashboard = new CustomerDashboard(this);
         AdminDashboard adminDashboard = new AdminDashboard(this, new AdminRepo(db));
         adminLogin = new AdminLogin(this, new AdminRepo(db));
 
         // Add screens
-        container.add(screen1, "SCREEN1");
-        container.add(customerDashboard, "SCREEN2");
+        container.add(dashboard, "DASHBOARD");
+        container.add(customerDashboard, "CUSTOMERDASHBOARD");
         container.add(adminDashboard, "ADMINDASHBOARD");
         container.add(adminLogin, "ADMINLOGIN");
         
@@ -163,6 +163,7 @@ public class MainFrame extends JFrame {
         }
     }
 
+    //retrieve vehicle from database
     public Vehicle getStoredVehicle(String plate) {
         return getStoredVehicle(plate, null);
     }
@@ -206,6 +207,7 @@ public class MainFrame extends JFrame {
         return null;
     }
 
+    //load all vehicle from database
     public void loadVehiclesFromDb() {
         if (db == null) {
             return;
@@ -275,7 +277,6 @@ public class MainFrame extends JFrame {
         }
     }
 
-    //====UMMU'S
     
     public ParkingLot getParkingLot() {
         return parkingLot;

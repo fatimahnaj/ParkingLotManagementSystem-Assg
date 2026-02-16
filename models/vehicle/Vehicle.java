@@ -10,9 +10,8 @@ public class Vehicle {
     protected LocalDateTime entryTime;
     protected LocalDateTime exitTime;
     protected boolean handicappedCardHolder;
-    //private String fine;
 
-    //must pass in these data waktu nk create vehicle (WAJIBB)
+    //must pass in these data waktu nk create vehicle (constructor)
     public Vehicle(String plateNum, String type) {
         this.plateNum = plateNum;
         this.type = type;

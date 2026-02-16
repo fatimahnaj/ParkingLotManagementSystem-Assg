@@ -1,9 +1,8 @@
 package ui;
 
 import admin.AdminRepo;
-
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class AdminLogin extends JPanel {
 
@@ -35,7 +34,7 @@ public class AdminLogin extends JPanel {
         JButton backBtn = new JButton("Back");
 
         loginBtn.addActionListener(e -> doLogin());
-        backBtn.addActionListener(e -> frame.showScreen("SCREEN1"));
+        backBtn.addActionListener(e -> frame.showScreen("DASHBOARD"));
 
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
         add(title, gbc);

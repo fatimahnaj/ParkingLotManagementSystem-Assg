@@ -46,7 +46,8 @@ class CustomerDashboard extends JPanel {
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 16, 0));
         buttonsPanel.add(parkBtn);
         buttonsPanel.add(exitBtn);
-        buttonsPanel.add(simulateBtn);
+        // UNCOMMENT IF WANT TO SEE SIMULATE FINE
+        // buttonsPanel.add(simulateBtn);
 
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
@@ -59,7 +60,7 @@ class CustomerDashboard extends JPanel {
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         JButton returnBtn = new JButton("Return");
-        returnBtn.addActionListener(e -> frame.showScreen("SCREEN1"));
+        returnBtn.addActionListener(e -> frame.showScreen("DASHBOARD"));
         bottomPanel.add(returnBtn, BorderLayout.WEST);
         add(bottomPanel, BorderLayout.SOUTH);
 
@@ -253,7 +254,7 @@ class CustomerDashboard extends JPanel {
             "Payment successful.\nVehicle " + currentVehicle.getPlateNum() + " has exited."
         );
         refresh();
-        frame.showScreen("SCREEN1");
+        frame.showScreen("DASHBOARD");
     }
 
     // To test the skip-fines flow (Simulator)

@@ -48,7 +48,7 @@ public class AdminDashboard extends JPanel {
             if (frame != null) {
                 resetToParkedTab(); // reset tab
                 frame.resetAdminLogin(); // clear login form for next time
-                frame.showScreen("SCREEN1");
+                frame.showScreen("DASHBOARD");
             }
         });
 
