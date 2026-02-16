@@ -1,9 +1,9 @@
 package ui;
+import dto.billing.BillingBreakdownDto;
 import java.awt.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
 import javax.swing.*;
-import dto.billing.BillingBreakdownDto;
 import models.Ticket;
 import models.parking.ParkingSpot;
 import models.parking.SpotType;

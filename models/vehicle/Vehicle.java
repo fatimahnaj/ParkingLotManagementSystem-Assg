@@ -9,12 +9,14 @@ public class Vehicle {
     protected String type;
     protected LocalDateTime entryTime;
     protected LocalDateTime exitTime;
+    protected boolean handicappedCardHolder;
     //private String fine;
 
     //must pass in these data waktu nk create vehicle (WAJIBB)
     public Vehicle(String plateNum, String type) {
         this.plateNum = plateNum;
         this.type = type;
+        this.handicappedCardHolder = false;
     }
 
     public void setEntryTime(LocalDateTime entryTime) {
@@ -46,20 +48,22 @@ public class Vehicle {
         return exitTime;
     }
 
+    public boolean isHandicappedCardHolder() {
+        return handicappedCardHolder;
+    }
+
+    public void setHandicappedCardHolder(boolean handicappedCardHolder) {
+        this.handicappedCardHolder = handicappedCardHolder;
+    }
+
     //get entry/exit time with better format
     public String getFormattedEntryTime(){
-        if (entryTime == null) {
-            return "N/A";
-        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedEntryTime = entryTime.format(formatter);
         return formattedEntryTime;
     }
 
     public String getFormattedExitTime(){
-        if (exitTime == null) {
-            return "N/A";
-        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedExitTime = exitTime.format(formatter);
         return formattedExitTime;
