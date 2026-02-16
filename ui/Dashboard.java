@@ -1,8 +1,6 @@
 package ui;
 import java.awt.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import javax.swing.*;
 import models.vehicle.Car;
 import models.vehicle.Handicapped;
@@ -13,7 +11,6 @@ import models.vehicle.Vehicle;
 class Dashboard extends JPanel {
 
     private final MainFrame frame;
-    private List<Vehicle> vehicles;
 
     public Dashboard(MainFrame frame) {
 
@@ -25,15 +22,15 @@ class Dashboard extends JPanel {
         Dimension registerBtnSize = new Dimension(150, 40);
         registerBtn.setPreferredSize(registerBtnSize);
         registerBtn.addActionListener(e-> registerPopup());
+        registerBtn.setFocusPainted(false);
+        registerBtn.setFocusable(false);
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         JButton adminBtn = new JButton("admin");
         adminBtn.addActionListener(e -> frame.showScreen("ADMINLOGIN"));
+        adminBtn.setFocusPainted(false);
+        adminBtn.setFocusable(false);
         bottomPanel.add(adminBtn, BorderLayout.EAST);
-
-        JButton customerBtn = new JButton("Customer");
-        customerBtn.addActionListener(e-> frame.showScreen("CUSTOMERSCREEN"));
-        bottomPanel.add(customerBtn, BorderLayout.WEST);
 
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.add(registerBtn, new GridBagConstraints());
@@ -84,8 +81,7 @@ class Dashboard extends JPanel {
                 //successful :
                 //check if vehicle already exist in database
                 Vehicle v = frame.getStoredVehicle(plate,selectedChoice);
-                v.setEntryTime(LocalDateTime.now());
-
+                
                 
                 if (v == null) {
                     // Vehicle doesn't exist, create a new one
@@ -100,17 +96,14 @@ class Dashboard extends JPanel {
                         }
                     }
                     //Entry time is counted only once customer selected parking spot
-                    v.setEntryTime(LocalDateTime.now());
                     frame.addVehicle(v);
                     frame.saveNewVehicle(v);
-                }
+                } 
                 //print data of the vehicle if entry is succeed
                 if (v != null) {
                     System.out.println(v);
                     JOptionPane.showMessageDialog(panel, "Registration successful.");
-                    v.setEntryTime(LocalDateTime.now()); //set Entry time
                     frame.addVehicle(v);
-                    frame.updateVehicleInDb(v); //update vehicle data (we got new entry time now)
                     frame.showScreen("SCREEN2");
                 } else {
                     JOptionPane.showMessageDialog(panel, "Error: Failed to create vehicle.");

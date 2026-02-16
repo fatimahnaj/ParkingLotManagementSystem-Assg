@@ -8,13 +8,13 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
+import models.Ticket;
 import models.parking.ParkingLot;
 import models.vehicle.Car;
 import models.vehicle.Handicapped;
 import models.vehicle.Motorcycle;
 import models.vehicle.SUV;
 import models.vehicle.Vehicle;
-import models.Ticket;
 import service.billing.BillingService;
 import service.billing.DefaultBillingPolicy;
 import service.billing.DefaultDiscountPolicy;
@@ -51,7 +51,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
 
-        setTitle("Multi Screen App");
+        setTitle("Parking Lot Management");
         setSize(1000, 500);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -122,27 +122,12 @@ public class MainFrame extends JFrame {
 
     //save new vehicle to database
     public void saveNewVehicle(Vehicle v) {
-        String sql = "INSERT OR IGNORE INTO vehicles(plate, vehicle_type, is_vip, entry_time, exit_time) VALUES (?, ?, 0, ?, ?)";
+        String sql = "INSERT OR IGNORE INTO vehicles(plate, vehicle_type, is_vip) VALUES (?, ?, 0)";
         try (Connection c = db.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setString(1, v.getPlateNum());
             ps.setString(2, v.getType());
-            
-            // Handle entry_time (can be null or LocalDateTime)
-            if (v.getEntryTime() != null) {
-                ps.setString(3, v.getFormattedEntryTime());
-            } else {
-                ps.setNull(3, java.sql.Types.VARCHAR);
-            }
-            
-            // Handle exit_time (can be null or LocalDateTime)
-            if (v.getExitTime() != null) {
-                ps.setString(4, v.getFormattedExitTime());
-            } else {
-                ps.setNull(4, java.sql.Types.VARCHAR);
-            }
-
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

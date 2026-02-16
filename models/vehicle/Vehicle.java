@@ -70,7 +70,7 @@ public class Vehicle {
     }
 
     public String toString() {
-        return "PlateNum = " + plateNum + " | Type = " + type + " | Entry time = " + getFormattedEntryTime();
+        return "PlateNum = " + plateNum + " | Type = " + type;
 }
 
 }
