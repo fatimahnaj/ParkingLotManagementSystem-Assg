@@ -26,9 +26,13 @@ CREATE TABLE IF NOT EXISTS parking_sessions (
     spot_id     TEXT NOT NULL,
     entry_time  TEXT NOT NULL,
     exit_time   TEXT,
+    fine_policy TEXT NOT NULL DEFAULT 'A',
     fee_amount  REAL NOT NULL DEFAULT 0,
     fine_amount REAL NOT NULL DEFAULT 0,
     is_paid     INTEGER NOT NULL DEFAULT 0,
+    payment_method TEXT NOT NULL DEFAULT 'UNKNOWN',
+    amount_paid REAL NOT NULL DEFAULT 0,
+    remaining_balance REAL NOT NULL DEFAULT 0,
     FOREIGN KEY (plate) REFERENCES vehicles(plate),
     FOREIGN KEY (spot_id) REFERENCES parking_spots(spot_id)
 );

@@ -64,19 +64,28 @@ public class Vehicle {
 
     //get entry/exit time with better format
     public String getFormattedEntryTime(){
+        if (entryTime == null) {
+            return "-";
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedEntryTime = entryTime.format(formatter);
         return formattedEntryTime;
     }
 
     public String getFormattedExitTime(){
+        if (exitTime == null) {
+            return "-";
+        }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String formattedExitTime = exitTime.format(formatter);
         return formattedExitTime;
     }
 
     public String toString() {
-        return "PlateNum = " + plateNum + " | Type = " + type + " | Entry time = " + getFormattedEntryTime();
+        return "PlateNum = " + plateNum
+            + " | Type = " + type
+            + " | Entry time = " + getFormattedEntryTime()
+            + " | Exit time = " + getFormattedExitTime();
 }
 
 }

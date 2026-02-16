@@ -15,4 +15,10 @@ public class FineService {
         double overstayFine = finePolicy.computeOverstayFine(parkedMinutes);
         return new FineSummaryDto(reservationFine, overstayFine);
     }
+
+    public FineSummaryDto evaluateCurrentSessionFines(Ticket ticket, long parkedMinutes, String policyOption) {
+        double reservationFine = finePolicy.computeReservationMisuseFine(ticket);
+        double overstayFine = finePolicy.computeOverstayFine(parkedMinutes, policyOption);
+        return new FineSummaryDto(reservationFine, overstayFine);
+    }
 }
