@@ -80,14 +80,12 @@ public class MainFrame extends JFrame {
         // Create screens
         Dashboard screen1 = new Dashboard(this);
         customerDashboard = new CustomerDashboard(this);
-        Screen3 screen3 = new Screen3(this);
         AdminDashboard adminDashboard = new AdminDashboard(this, new AdminRepo(db));
         adminLogin = new AdminLogin(this, new AdminRepo(db));
 
         // Add screens
         container.add(screen1, "SCREEN1");
         container.add(customerDashboard, "SCREEN2");
-        container.add(screen3, "SCREEN3");
         container.add(adminDashboard, "ADMINDASHBOARD");
         container.add(adminLogin, "ADMINLOGIN");
         
