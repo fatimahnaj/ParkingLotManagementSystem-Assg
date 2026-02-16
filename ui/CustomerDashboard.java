@@ -10,7 +10,7 @@ class CustomerDashboard extends JPanel {
     private final MainFrame frame;
     private JPanel labelsPanel;
     private JLabel plateLabel;
-    private JLabel vehicleTypeLabel;
+    //private JLabel vehicleTypeLabel;
     private Vehicle currentVehicle;
 
     public CustomerDashboard(MainFrame frame) {
@@ -18,8 +18,8 @@ class CustomerDashboard extends JPanel {
         this.frame = frame;
         setLayout(new BorderLayout());
 
-        plateLabel = new JLabel("",SwingConstants.CENTER);
-        vehicleTypeLabel = new JLabel("",SwingConstants.CENTER);
+        plateLabel = new JLabel("", SwingConstants.CENTER);
+        plateLabel.setFont(plateLabel.getFont().deriveFont(30f));
 
         JButton parkBtn = new JButton("Park");
         parkBtn.setPreferredSize(new Dimension(150, 40));
@@ -29,10 +29,9 @@ class CustomerDashboard extends JPanel {
         parkBtn.addActionListener(e -> handlePark());
         exitBtn.addActionListener(e -> handleExit());
 
-        labelsPanel = new JPanel(new GridLayout(2, 1, 0, 8));
-        labelsPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        labelsPanel = new JPanel();
+        labelsPanel.setBorder(BorderFactory.createEmptyBorder(150, 0,0,0));
         labelsPanel.add(plateLabel);
-        labelsPanel.add(vehicleTypeLabel);
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 16, 0));
         buttonsPanel.add(parkBtn);
@@ -43,7 +42,7 @@ class CustomerDashboard extends JPanel {
         labelsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         centerPanel.add(labelsPanel, BorderLayout.CENTER);
-        centerPanel.add(Box.createVerticalStrut(16));
+        //centerPanel.add(Box.createVerticalStrut(16));
         centerPanel.add(buttonsPanel);
         add(centerPanel, BorderLayout.CENTER);
 
@@ -54,8 +53,7 @@ class CustomerDashboard extends JPanel {
         currentVehicle = frame.getLatestVehicle();
         String plateText = currentVehicle == null ? "(none)" : currentVehicle.getPlateNum();
         String vehicleTypeText = currentVehicle == null ? "(none)" : currentVehicle.getType();
-        plateLabel.setText("Plate number : " + plateText);
-        vehicleTypeLabel.setText("Vehicle type : " + vehicleTypeText);
+        plateLabel.setText("Vehicle : " + plateText + " [" + vehicleTypeText + "]");
         revalidate();
         repaint();
     }

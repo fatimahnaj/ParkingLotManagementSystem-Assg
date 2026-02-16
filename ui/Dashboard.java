@@ -84,6 +84,8 @@ class Dashboard extends JPanel {
                 //successful :
                 //check if vehicle already exist in database
                 Vehicle v = frame.getStoredVehicle(plate,selectedChoice);
+                v.setEntryTime(LocalDateTime.now());
+
                 
                 if (v == null) {
                     // Vehicle doesn't exist, create a new one
@@ -106,7 +108,9 @@ class Dashboard extends JPanel {
                 if (v != null) {
                     System.out.println(v);
                     JOptionPane.showMessageDialog(panel, "Registration successful.");
+                    v.setEntryTime(LocalDateTime.now()); //set Entry time
                     frame.addVehicle(v);
+                    frame.updateVehicleInDb(v); //update vehicle data (we got new entry time now)
                     frame.showScreen("SCREEN2");
                 } else {
                     JOptionPane.showMessageDialog(panel, "Error: Failed to create vehicle.");
@@ -119,4 +123,3 @@ class Dashboard extends JPanel {
         
     }
 }
-

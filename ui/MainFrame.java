@@ -74,7 +74,7 @@ public class MainFrame extends JFrame {
     }
 
     
-
+    //======VEHICLE'S DATA HANDLING
     //get the vehicle objects
     public List<Vehicle> getVehicles(){
         return vehicles;
@@ -86,6 +86,8 @@ public class MainFrame extends JFrame {
             customerDashboard.refresh();
         }
     }
+
+    
 
     //save new vehicle to database
     public void saveNewVehicle(Vehicle v) {
@@ -110,6 +112,37 @@ public class MainFrame extends JFrame {
                 ps.setNull(4, java.sql.Types.VARCHAR);
             }
 
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //update existing vehicle data in database
+    public void updateVehicleInDb(Vehicle v) {
+        if (v == null || v.getPlateNum() == null) {
+            return;
+        }
+
+        String sql = "UPDATE vehicles SET vehicle_type = ?, entry_time = ?, exit_time = ? WHERE plate = ?";
+        try (Connection c = db.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setString(1, v.getType());
+
+            if (v.getEntryTime() != null) {
+                ps.setString(2, v.getFormattedEntryTime());
+            } else {
+                ps.setNull(2, java.sql.Types.VARCHAR);
+            }
+
+            if (v.getExitTime() != null) {
+                ps.setString(3, v.getFormattedExitTime());
+            } else {
+                ps.setNull(3, java.sql.Types.VARCHAR);
+            }
+
+            ps.setString(4, v.getPlateNum());
             ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
