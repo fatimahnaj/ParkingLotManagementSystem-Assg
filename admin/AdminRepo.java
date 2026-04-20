@@ -49,12 +49,14 @@ public class AdminRepo {
     }
 
     public static class FineRow {
-        public final String plate, fineType;
+        public final String plate, fineType, status, createdAt;
         public final double amount;
-        public FineRow(String plate, String fineType, double amount) {
+        public FineRow(String plate, String fineType, double amount, String status, String createdAt) {
             this.plate = plate;
             this.fineType = fineType;
             this.amount = amount;
+            this.status = status;
+            this.createdAt = createdAt;
         }
     }
 
@@ -158,12 +160,11 @@ public class AdminRepo {
         return out;
     }
 
-    /** Unpaid fines summary (from fines table). */
+    /** Full fine history (paid + unpaid) from fines table. */
     public List<FineRow> getUnpaidFines() {
         String sql = """
-            SELECT plate, fine_type, amount
+            SELECT plate, fine_type, amount, is_paid, created_at
             FROM fines
-            WHERE is_paid = 0
             ORDER BY created_at DESC;
         """;
 
@@ -176,7 +177,9 @@ public class AdminRepo {
                 out.add(new FineRow(
                         rs.getString("plate"),
                         rs.getString("fine_type"),
-                        rs.getDouble("amount")
+                        rs.getDouble("amount"),
+                        rs.getInt("is_paid") == 1 ? "PAID" : "UNPAID",
+                        rs.getString("created_at")
                 ));
             }
         } catch (SQLException e) {
@@ -224,6 +227,7 @@ public class AdminRepo {
         if (option == null) return;
         String x = option.trim().toUpperCase();
         if (!(x.equals("A") || x.equals("B") || x.equals("C"))) x = "A";
+        String previous = getFinePolicyOption();
 
         String sql = """
             INSERT INTO admin_settings(key, value) VALUES('fine_policy', ?)
@@ -234,6 +238,7 @@ public class AdminRepo {
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, x);
             ps.executeUpdate();
+            System.out.println("[AdminRepo] Fine policy changed: " + previous + " -> " + x);
         } catch (SQLException e) {
             System.out.println("[AdminRepo] setFinePolicyOption error: " + e.getMessage());
         }

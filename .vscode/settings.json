@@ -14,5 +14,6 @@
     "java.project.resourceFilters": [
         "bin",
         ".git"
-    ]
+    ],
+    "java.debug.settings.onBuildFailureProceed": true
 }

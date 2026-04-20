@@ -12,6 +12,11 @@ public class InMemoryUnpaidFineRepository implements UnpaidFineRepository {
     }
 
     @Override
+    public void addUnpaidFine(String plateNum, String fineType, double amount) {
+        addUnpaidFine(plateNum, amount);
+    }
+
+    @Override
     public void addUnpaidFine(String plateNum, double amount) {
         double current = unpaidByPlate.getOrDefault(plateNum, 0.0);
         unpaidByPlate.put(plateNum, current + amount);
